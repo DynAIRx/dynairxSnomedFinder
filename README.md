@@ -1,5 +1,5 @@
 # dynairxSnomedFinder
-Custom function to search for diseases of patients given their patient records
+Custom function to search for diseases of patients given their structured patient records such as CPRD 
 
 ### Required
 - Python 3.7+
