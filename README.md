@@ -6,6 +6,7 @@ Custom function to search for diseases of patients given their structured patien
 - hydra-core (tested with version 1.3.2)
 - pandas
 - Omegaconf (tested with version 2.3.0)
+- Change paths to the input files within configs/searchargs.yaml file. Depending on where you might have those stored.
 
 ## Tasks
 Problem addressed: Given a patient record with contents in a strctured format (e.g. coded CPRD data), determine whether certain conditions (mapped to snomed codes) in a predefined codelist (dynairx) exist or not. If conditions do indeed exist, retrieve a list of conditions for a patient.
