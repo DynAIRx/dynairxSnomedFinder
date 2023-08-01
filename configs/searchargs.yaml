@@ -1,0 +1,5 @@
+Codelists:
+  dynairx_codelist_path: "../Codelists/output/merged_grouped_conditions_with_snomed.csv"
+
+data:
+  patient_data_path: "data/ExampleData.xlsx"
