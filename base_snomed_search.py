@@ -36,20 +36,20 @@ class baseSearch:
                                          dtype={"SnomedCTConceptId": str, "Term": str, "Disease": str, "Otherinstructions": str, "origin":str})
 
     
-    # disease_finder: Function to find SNOMED codes associated with a given disease
+    # snomed_finder: Function to find SNOMED codes associated with a given disease
     # Input:
     # disease_name: Name of the disease to return codes for
     #
     # Output:
     # disease_codes: List of SNOMED codes for the given disease
-    def disease_finder(self, disease_name):
+    def snomed_finder(self, disease_name):
         disease = list(self.codelist[self.codelist['Disease'] == disease_name].SnomedCTConceptId)
         return diseases
     
     # base_snomed_finder: Function to find presence of SNOMED codes within dataframe of patient medcodes
     # Input:
     # patient_df: Dataframe of patient record taken from CPRD primary care
-    # disease_codes: List of SNOMED codes indicating presence of a disease (use disease_finder helper function)
+    # disease_codes: List of SNOMED codes indicating presence of a disease (use snomed_finder helper function)
     #
     # Output:
     # disease_active: True if SNOMED codes present, otherwise False
@@ -69,7 +69,7 @@ class baseSearch:
     # Output:
     # disease_active: True if disease is present, otherwise False
     def alcohol_problems(self, patientdf):
-        snomed_codes = disease_finder('Alcohol Problem')
+        snomed_codes = self.snomed_finder('Alcohol Problem')
         # This includes 4 codes that need extra logic, remove these for now
         snomed_codes.remove('10800000000000000') # Units per week
         snomed_codes.remove('228958009') # Units per week
@@ -103,7 +103,7 @@ class baseSearch:
         # Output:
         # disease_active: True if disease is present, otherwise False
         def alcohol_related_brain_injury(self, patientdf):
-            snomed_codes = self.disease_finder('Alcohol-related Brain Injury')
+            snomed_codes = self.snomed_finder('Alcohol-related Brain Injury')
             disease_active = self.base_snomed_finder(patient_df, snomed_codes)
             return disease_active
 
@@ -114,7 +114,7 @@ class baseSearch:
         # Output:
         # disease_active: True if disease is present, otherwise False
         def alcoholic_liver_disease(self, patientdf):
-            snomed_codes = self.disease_finder('Alcoholic Liver Disease')
+            snomed_codes = self.snomed_finder('Alcoholic Liver Disease')
             disease_active = self.base_snomed_finder(patient_df, snomed_codes)
             return disease_active
 
@@ -124,11 +124,21 @@ def main(args):
         print("Current working directory: ", os.getcwd())
         print(OmegaConf.to_yaml(cfg),"\n")
 
+    # SR Comment:
+    # Something like this I'm thinking?
+    # To calculate diseases for a single patient
+    # 
+    # disease_functions = [self.alcohol_problemns, self.alcoholic_liver_disease, .......]
+    # disease_active = list()
+    # for f in disease_functions:
+    #     disease_active.append(f(patient_df))
+    #
+    
 
     bs = baseSearch(cfg.data.patient_data_path, cfg.Codelists.dynairx_codelist_path)
     bs.read_data()
     patient_snomed_codes = bs.base_snomed_finder(bs.observations, bs.medDict, args.patient_id)
-    patient_diseases = bs.disease_finder(patient_snomed_codes, bs.codelist)
+    patient_diseases = bs.snomed_finder(patient_snomed_codes, bs.codelist)
     print("Patient {} has these diseases below".format(args.patient_id))
     for i,dis in enumerate(patient_diseases):
         print("\t", i+1,  dis)
