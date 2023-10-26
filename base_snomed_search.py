@@ -96,27 +96,27 @@ class baseSearch:
         # If still here then no alcohol problems and can return False
         return False
 
-        # alcohol_related_brain_injury
-        # Simple check
-        # Input:
-        # patientdf: Dataframe of patient medcode ids
-        # Output:
-        # disease_active: True if disease is present, otherwise False
-        def alcohol_related_brain_injury(self, patientdf):
-            snomed_codes = self.snomed_codes_for_disease('Alcohol-related Brain Injury')
-            disease_active = self.check_presence_snomed(patient_df, snomed_codes)
-            return disease_active
+    # alcohol_related_brain_injury
+    # Simple check
+    # Input:
+    # patientdf: Dataframe of patient medcode ids
+    # Output:
+    # disease_active: True if disease is present, otherwise False
+    def alcohol_related_brain_injury(self, patientdf):
+        snomed_codes = self.snomed_codes_for_disease('Alcohol-related Brain Injury')
+        disease_active = self.check_presence_snomed(patient_df, snomed_codes)
+        return disease_active
 
-        # alcoholic_liver_disease
-        # Simple check
-        # Input:
-        # patientdf: Dataframe of patient medcode ids
-        # Output:
-        # disease_active: True if disease is present, otherwise False
-        def alcoholic_liver_disease(self, patientdf):
-            snomed_codes = self.snomed_codes_for_disease('Alcoholic Liver Disease')
-            disease_active = self.check_presence_snomed(patient_df, snomed_codes)
-            return disease_active
+    # alcoholic_liver_disease
+    # Simple check
+    # Input:
+    # patientdf: Dataframe of patient medcode ids
+    # Output:
+    # disease_active: True if disease is present, otherwise False
+    def alcoholic_liver_disease(self, patientdf):
+        snomed_codes = self.snomed_codes_for_disease('Alcoholic Liver Disease')
+        disease_active = self.check_presence_snomed(patient_df, snomed_codes)
+        return disease_active
 
 def main(args):
     with initialize(version_base=None, config_path=args.configs):
