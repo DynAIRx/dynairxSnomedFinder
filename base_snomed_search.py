@@ -36,27 +36,27 @@ class baseSearch:
                                          dtype={"SnomedCTConceptId": str, "Term": str, "Disease": str, "Otherinstructions": str, "origin":str})
 
     
-    # snomed_finder: Function to find SNOMED codes associated with a given disease
+    # snomed_codes_for_disease: Function to find SNOMED codes associated with a given disease / condition
     # Input:
-    # disease_name: Name of the disease to return codes for
+    # disease_name: Name of the disease /condition to return codes for
     #
     # Output:
-    # disease_codes: List of SNOMED codes for the given disease
-    def snomed_finder(self, disease_name):
-        disease = list(self.codelist[self.codelist['Disease'] == disease_name].SnomedCTConceptId)
-        return diseases
+    # snomed_codes: List of SNOMED codes for the given disease / condition
+    def snomed_codes_for_disease(self, disease_name):
+        snomed_codes = list(self.codelist[self.codelist['Disease'] == disease_name].SnomedCTConceptId)
+        return snomed_codes
     
-    # base_snomed_finder: Function to find presence of SNOMED codes within dataframe of patient medcodes
+    # check_presence_snomed: Function to find presence of SNOMED codes within dataframe of patient medcodes
     # Input:
     # patient_df: Dataframe of patient record taken from CPRD primary care
-    # disease_codes: List of SNOMED codes indicating presence of a disease (use snomed_finder helper function)
+    # disease_codes: List of SNOMED codes indicating presence of a disease / condition (use snomed_codes_for_disease helper function)
     #
     # Output:
-    # disease_active: True if SNOMED codes present, otherwise False
-    def base_snomed_finder(self, patient_df, disease_codes):
+    # condition_active: True if SNOMED codes present, otherwise False
+    def check_presence_snomed(self, patient_df, disease_codes):
         patient_snomed_codes = list(map(self.medcode2snomed, patient_df.medcode))
-        disease_active = any(patient_snomed_codes in disease_codes)
-        return disease_active
+        condition_active = any(patient_snomed_codes in disease_codes)
+        return condition_active
 
     #########################################################################
     # Disease functions
@@ -69,7 +69,7 @@ class baseSearch:
     # Output:
     # disease_active: True if disease is present, otherwise False
     def alcohol_problems(self, patientdf):
-        snomed_codes = self.snomed_finder('Alcohol Problem')
+        snomed_codes = self.snomed_codes_for_disease('Alcohol Problem')
         # This includes 4 codes that need extra logic, remove these for now
         snomed_codes.remove('10800000000000000') # Units per week
         snomed_codes.remove('228958009') # Units per week
@@ -77,7 +77,7 @@ class baseSearch:
         snomed_codes.remove('228957004') # Units per day
 
         # snomed_codes is now an "easy" search
-        disease_active = self.base_snomed_finder(patient_df, snomed_codes)
+        disease_active = self.check_presence_snomed(patient_df, snomed_codes)
 
         # If alcohol now active can skip the numerical checks
         if disease_active:
@@ -103,8 +103,8 @@ class baseSearch:
         # Output:
         # disease_active: True if disease is present, otherwise False
         def alcohol_related_brain_injury(self, patientdf):
-            snomed_codes = self.snomed_finder('Alcohol-related Brain Injury')
-            disease_active = self.base_snomed_finder(patient_df, snomed_codes)
+            snomed_codes = self.snomed_codes_for_disease('Alcohol-related Brain Injury')
+            disease_active = self.check_presence_snomed(patient_df, snomed_codes)
             return disease_active
 
         # alcoholic_liver_disease
@@ -114,8 +114,8 @@ class baseSearch:
         # Output:
         # disease_active: True if disease is present, otherwise False
         def alcoholic_liver_disease(self, patientdf):
-            snomed_codes = self.snomed_finder('Alcoholic Liver Disease')
-            disease_active = self.base_snomed_finder(patient_df, snomed_codes)
+            snomed_codes = self.snomed_codes_for_disease('Alcoholic Liver Disease')
+            disease_active = self.check_presence_snomed(patient_df, snomed_codes)
             return disease_active
 
 def main(args):
@@ -137,8 +137,8 @@ def main(args):
 
     bs = baseSearch(cfg.data.patient_data_path, cfg.Codelists.dynairx_codelist_path)
     bs.read_data()
-    patient_snomed_codes = bs.base_snomed_finder(bs.observations, bs.medDict, args.patient_id)
-    patient_diseases = bs.snomed_finder(patient_snomed_codes, bs.codelist)
+    patient_snomed_codes = bs.check_presence_snomed(bs.observations, bs.medDict, args.patient_id)
+    patient_diseases = bs.snomed_codes_for_disease(patient_snomed_codes, bs.codelist)
     print("Patient {} has these diseases below".format(args.patient_id))
     for i,dis in enumerate(patient_diseases):
         print("\t", i+1,  dis)
